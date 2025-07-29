@@ -8,3 +8,9 @@ python-multipart==0.0.6
 python-decouple==3.8
 pydantic==2.5.0
 pydantic-settings==2.1.0
+cryptography==41.0.7
+python-dotenv==3.0.0
+email-validator==2.1.0
+slowapi==0.1.9
+structlog==23.2.0
+alembic==1.13.1
