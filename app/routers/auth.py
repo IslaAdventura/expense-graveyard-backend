@@ -74,7 +74,8 @@ def get_current_session(
     # Log access for security monitoring
     security_logger.info(
     "Session accessed: user_id=%s, ip=%s",
-    session.user_id, request.client.host if request.client else "unknown"
+    session.user_id,
+    request.client.host if request.client else "unknown"
 )
 
     return session
@@ -163,7 +164,10 @@ async def login_user(
     """Login user with secure server-side session 👻"""
 
     device_info = get_device_info(request)
-    security_logger.info("Login attempt for %s from %s", user_data.username, device_info['ip_address'])
+    security_logger.info(
+        "Login attempt for %s from %s",
+        user_data.username, device_info['ip_address']
+    )
 
     # Find user
     user = db.query(User).filter(User.username == user_data.username).first()
@@ -197,7 +201,7 @@ async def login_user(
         )
 
     if not user.is_active:
-        security_logger.warning("Login attempt for inactive user: %s%, user_data.username")
+        security_logger.warning("Login attempt for inactive user: %s", user_data.username)
         raise HTTPException(status_code=400, detail="This soul has been banished!")
 
     # Successful login - reset failed attempts
