@@ -4,10 +4,8 @@ Security functions for password hashing and server-side session management
 """
 import os
 import secrets
-from datetime import datetime, timedelta
-from typing import Optional
 from passlib.context import CryptContext
-from cryptography.fernet import Fernet
+from cryptography.fernet import Fernet, InvalidToken
 
 # Password hashing context
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
@@ -49,7 +47,7 @@ def decrypt_data(encrypted_data: str) -> str:
         fernet = Fernet(get_encryption_key())
         decrypted_data = fernet.decrypt(encrypted_data.encode())
         return decrypted_data.decode()
-    except Exception:
+    except (ValueError, TypeError, InvalidToken):
         # If decryption fails, return empty string
         return ""
 
