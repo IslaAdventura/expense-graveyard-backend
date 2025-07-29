@@ -7,7 +7,7 @@ import logging
 from datetime import datetime, timezone
 from typing import Optional, List
 
-from fastapi import APIRouter, Depends, HTTPException, status, Request, Response, Cookie
+from fastapi import APIRouter, Depends, HTTPException, status, Request, Response, Cookie, Path
 from sqlalchemy.orm import Session
 
 from app.database import get_db
@@ -71,12 +71,12 @@ def get_current_session(
     session.last_accessed = datetime.now(timezone.utc)
     db.commit()
 
-    # Log access for security monitoring
+    # Log access for security monitoring - FIXED
     security_logger.info(
-    "Session accessed: user_id=%s, ip=%s",
-    session.user_id,
-    request.client.host if request.client else "unknown"
-)
+        "Session accessed: user_id=%s, ip=%s",
+        session.user_id,
+        request.client.host if request.client else "unknown"
+    )
 
     return session
 
@@ -200,6 +200,7 @@ async def login_user(
             detail="Incorrect username or password - the spirits reject you!"
         )
 
+    # FIXED: Syntax error - missing closing quote and extra %
     if not user.is_active:
         security_logger.warning("Login attempt for inactive user: %s", user_data.username)
         raise HTTPException(status_code=400, detail="This soul has been banished!")
@@ -337,9 +338,9 @@ async def get_active_sessions(
 
 @router.delete("/sessions/{session_id}")
 async def revoke_session(
-    session_id: str,
-    current_user: User = Depends(get_current_user),
-    db: Session = Depends(get_db)
+    session_id: str = Path(..., description="Session ID to revoke"),
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user)
 ):
     """Revoke a specific session"""
 
