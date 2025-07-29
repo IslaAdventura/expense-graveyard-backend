@@ -72,7 +72,10 @@ def get_current_session(
     db.commit()
 
     # Log access for security monitoring
-    security_logger.info("Session accessed: user_id={session.user_id}, ip={request.client.host}")
+    security_logger.info(
+    "Session accessed: user_id=%s, ip=%s",
+    session.user_id, request.client.host if request.client else "unknown"
+)
 
     return session
 
@@ -138,7 +141,7 @@ async def register_user(
     db.commit()
     db.refresh(db_user)
 
-    security_logger.info("New user registered: {user_data.username}")
+    security_logger.info("New user registered: %s", user_data.username)
 
     return UserResponse(
         id=db_user.id,
@@ -160,13 +163,13 @@ async def login_user(
     """Login user with secure server-side session 👻"""
 
     device_info = get_device_info(request)
-    security_logger.info("Login attempt for {user_data.username} from {device_info['ip_address']}")
+    security_logger.info("Login attempt for %s from %s", user_data.username, device_info['ip_address'])
 
     # Find user
     user = db.query(User).filter(User.username == user_data.username).first()
 
     if not user:
-        security_logger.warning("Login attempt for non-existent user: {user_data.username}")
+        security_logger.warning("Login attempt for non-existent user: %s", user_data.username)
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
             detail="Incorrect username or password - the spirits reject you!"
@@ -174,7 +177,7 @@ async def login_user(
 
     # Check if account is locked
     if user.is_account_locked():
-        security_logger.warning("Login attempt for locked account: {user_data.username}")
+        security_logger.warning("Login attempt for locked account: %s", user_data.username)
         raise HTTPException(
             status_code=status.HTTP_423_LOCKED,
             detail="Account temporarily locked due to failed login attempts"
@@ -194,7 +197,7 @@ async def login_user(
         )
 
     if not user.is_active:
-        security_logger.warning("Login attempt for inactive user: {user_data.username}")
+        security_logger.warning("Login attempt for inactive user: %s%, user_data.username")
         raise HTTPException(status_code=400, detail="This soul has been banished!")
 
     # Successful login - reset failed attempts
@@ -223,7 +226,7 @@ async def login_user(
         path="/"
     )
 
-    security_logger.info("Successful login for {user_data.username}")
+    security_logger.info("Successful login for %s", user_data.username)
 
     return Token(
         message="Login successful",
@@ -252,7 +255,7 @@ async def logout(
     # Clear cookie
     response.delete_cookie(key="session_id", path="/")
 
-    security_logger.info("User logged out: user_id={session.user_id}")
+    security_logger.info("User logged out: user_id=%s", session.user_id)
 
     return {"message": "Successfully logged out! 👻"}
 
@@ -270,7 +273,7 @@ async def logout_all_devices(
     # Clear current cookie
     response.delete_cookie(key="session_id", path="/")
 
-    security_logger.info("All sessions revoked for user_id={current_user.id}")
+    security_logger.info("All sessions revoked for user_id=%s", current_user.id)
 
     return {"message": "Successfully logged out from all devices! 🦇"}
 
@@ -348,7 +351,7 @@ async def revoke_session(
     session.revoke()
     db.commit()
 
-    security_logger.info("Session {session_id[:8]} revoked by user_id={current_user.id}")
+    security_logger.info("Session %s revoked by user_id=%s", session_id[:8], current_user.id)
 
     return {"message": "Session revoked successfully"}
 
