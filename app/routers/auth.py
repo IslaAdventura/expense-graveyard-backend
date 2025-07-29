@@ -7,7 +7,7 @@ import logging
 from datetime import datetime, timezone
 from typing import Optional, List
 
-from fastapi import APIRouter, Depends, HTTPException, status, Request, Response, Cookie, Path
+from fastapi import APIRouter, Depends, HTTPException, status, Request, Response, Cookie
 from sqlalchemy.orm import Session
 
 from app.database import get_db
@@ -336,29 +336,29 @@ async def get_active_sessions(
         for session in sessions
     ]
 
-@router.delete("/sessions/{session_id}")
-async def revoke_session(
-    session_id: str = Path(..., description="Session ID to revoke"),
-    db: Session = Depends(get_db),
-    current_user: User = Depends(get_current_user)
-):
-    """Revoke a specific session"""
+#@router.delete("/sessions/{session_id}")
+#async def revoke_session(
+#    session_id: str = Path(..., description="Session ID to revoke"),
+#    db: Session = Depends(get_db),
+#    current_user: User = Depends(get_current_user)
+#):
+#    """Revoke a specific session"""
 
-    session = db.query(UserSession).filter(
-        UserSession.session_id == session_id,
-        UserSession.user_id == current_user.id,
-        UserSession.is_active is True
-    ).first()
+#    session = db.query(UserSession).filter(
+#        UserSession.session_id == session_id,
+#        UserSession.user_id == current_user.id,
+#        UserSession.is_active is True
+#    ).first()
 
-    if not session:
-        raise HTTPException(status_code=404, detail="Session not found")
+#    if not session:
+#        raise HTTPException(status_code=404, detail="Session not found")
 
-    session.revoke()
-    db.commit()
+#    session.revoke()
+#    db.commit()
 
-    security_logger.info("Session %s revoked by user_id=%s", session_id[:8], current_user.id)
+#    security_logger.info("Session %s revoked by user_id=%s", session_id[:8], current_user.id)
 
-    return {"message": "Session revoked successfully"}
+#    return {"message": "Session revoked successfully"}
 
 # EMERGENCY ADMIN ENDPOINTS
 @router.post("/emergency/revoke-all-sessions")
