@@ -27,17 +27,10 @@ app = FastAPI(
 # CRITICAL: CORS configuration for session cookies across domains
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=[
-        "http://localhost:3000",  # React dev server
-        "http://localhost:5173",  # Vite dev server
-        "https://localhost:3000", # HTTPS localhost
-        "https://localhost:5173", # HTTPS Vite
-        # Add your production frontend domain when you deploy
-    ],
-    allow_credentials=True,  # CRITICAL: Allows cookies to be sent cross-domain
-    allow_methods=["GET", "POST", "PUT", "DELETE", "OPTIONS"],
-    allow_headers=["*"],
-    expose_headers=["*"],  # Expose all headers
+    allow_origins=["*"],  # Allow all origins for development
+    allow_credentials=True,
+    allow_methods=["*"],  # Allow all methods
+    allow_headers=["*"],  # Allow all headers
 )
 
 # Include authentication routes
