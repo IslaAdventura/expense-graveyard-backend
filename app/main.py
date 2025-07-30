@@ -27,10 +27,13 @@ app = FastAPI(
 # CRITICAL: CORS configuration for session cookies across domains
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],  # Allow all origins for development
+    allow_origins=[
+        "http://localhost:3000",  # For npm start development
+        "https://expense-graveyard.netlify.app",  # Netlify deployment
+    ],
     allow_credentials=True,
-    allow_methods=["*"],  # Allow all methods
-    allow_headers=["*"],  # Allow all headers
+    allow_methods=["*"],
+    allow_headers=["*"],
 )
 
 # Include authentication routes
