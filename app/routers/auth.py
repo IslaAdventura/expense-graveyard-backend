@@ -1,4 +1,4 @@
-# app/routers/auth.py - REPLACE YOUR EXISTING FILE WITH THIS
+# app/routers/auth.py
 """
 Ultra-secure authentication with server-side sessions and encrypted data
 """
@@ -227,7 +227,7 @@ async def login_user(
         max_age=cookie_max_age,
         httponly=True,      # Can't be accessed by JavaScript - XSS protection
         secure=False,       # Set to True in production with HTTPS
-        samesite="lax",     # CSRF protection (lax for development)
+        samesite="none",
         path="/"
     )
 

@@ -23,20 +23,24 @@ app = FastAPI(
     version="2.0.0"
 )
 
-# CORS configuration for frontend
+
+# CRITICAL: CORS configuration for session cookies across domains
 app.add_middleware(
     CORSMiddleware,
     allow_origins=[
         "http://localhost:3000",  # React dev server
         "http://localhost:5173",  # Vite dev server
-        "https://your-frontend-domain.com",  # Production frontend
+        "https://localhost:3000", # HTTPS localhost
+        "https://localhost:5173", # HTTPS Vite
+        # Add your production frontend domain when you deploy
     ],
-    allow_credentials=True,  # Important for session cookies!
-    allow_methods=["GET", "POST", "PUT", "DELETE"],
+    allow_credentials=True,  # CRITICAL: Allows cookies to be sent cross-domain
+    allow_methods=["GET", "POST", "PUT", "DELETE", "OPTIONS"],
     allow_headers=["*"],
+    expose_headers=["*"],  # Expose all headers
 )
 
-# Include authentication routes - NOTE: prefix is /auth not /api/auth
+# Include authentication routes
 app.include_router(auth.router, prefix="/auth", tags=["authentication"])
 
 @app.get("/")
