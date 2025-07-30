@@ -222,14 +222,15 @@ async def login_user(
     cookie_max_age = 30 * 24 * 3600 if remember_me else 24 * 3600  # 30 days or 24 hours
 
     response.set_cookie(
-        key="session_id",
-        value=session.session_id,
-        max_age=cookie_max_age,
-        httponly=True,      # Can't be accessed by JavaScript - XSS protection
-        secure=False,       # Set to True in production with HTTPS
-        samesite="none",
-        path="/"
-    )
+    key="session_id",
+    value=session.session_id,
+    max_age=cookie_max_age,
+    httponly=True,
+    secure=True,        # CHANGE THIS: Required for samesite="none"
+    samesite="none",
+    path="/",
+    domain=None         # Let browser handle domain
+)
 
     security_logger.info("Successful login for %s", user_data.username)
 
